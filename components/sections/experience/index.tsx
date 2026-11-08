@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useLayoutEffect, useRef } from "react";
-import { motion, useSpring, useMotionValue } from "framer-motion";
+import React, { useRef, useState, useEffect } from "react";
+import { motion, useSpring, useMotionValue, useTransform } from "framer-motion";
 import SectionHeading from "@/components/ui/sectionHeading";
 import { Container } from "@/components/base/container";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 
 const experiences = [
   {
@@ -72,17 +71,17 @@ const ExperienceItem = ({ exp }: { exp: (typeof experiences)[0] }) => {
     <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="experience-item group md:px-8 border-b  border-secondary-400 py-12 lg:py-16 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition-colors hover:bg-secondary-900 px-4 cursor-navigation duration-800 ease-in-out max-w-[100vw]"
+      className="group md:px-8 border-b  border-secondary-400 py-12 lg:py-16 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors hover:bg-secondary-900 px-4 cursor-navigation duration-800 ease-in-out max-w-[100vw]"
     >
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 jusZ">
           <h3
-            className="text-3xl md:text-4xl lg:text-5xl font-bold font-space-grotesk text-text group-hover:text-secondary-50 dark:group-hover:text-secondary-100 transition-colors duration-500 ease-in-out
+            className="text-3xl md:text-4xl lg:text-5xl font-bold font-space-grotesk text-text-main group-hover:text-secondary-50 transition-colors duration-500 ease-in-out
               group-hover:text-shadow-[1px_1px_0_theme('colors.black'),_-1px_-1px_0_theme('colors.black'),_1px_-1px_0_theme('colors.black'),_-1px_1px_0_theme('colors.black')]"
           >
             {exp.role}
           </h3>
-          <div className="small-card-parent hidden lg:block w-auto relative mt-3 -ml-4">
+          <div className="small-card-parent w-auto relative mt-3 -ml-4">
             <motion.div
               style={{ x: springX, y: springY }}
               className="small-card h-3 absolute  top-0 max-w-[350px] w-3 group-hover:w-[350px] bg-background rounded-2xl border transition-all duration-900 ease-in-out
@@ -96,7 +95,7 @@ const ExperienceItem = ({ exp }: { exp: (typeof experiences)[0] }) => {
                             rounded-l-2xl h-full w-[10%] flex items-center justify-center border border-secondary-500
                            group-hover:text-primary group-hover:opacity-100 uppercase"
                 >
-                  <h4 className="text-md font-bold text-text rotate-90 origin-left-center whitespace-nowrap">
+                  <h4 className="text-md font-bold text-text-main rotate-90 origin-left-center whitespace-nowrap">
                     {exp.company}
                   </h4>
                 </div>
@@ -129,17 +128,8 @@ const ExperienceItem = ({ exp }: { exp: (typeof experiences)[0] }) => {
           </div>
         </div>
         <p className="text-lg md:text-xl text-text-muted">{exp.company}</p>
-        <details className="experience-details mt-4 max-w-2xl text-text-secondary">
-          <summary className="cursor-pointer py-2 text-sm font-semibold text-text">Role details & technologies</summary>
-          <ul className="list-disc pl-5 space-y-2 py-3 text-sm sm:text-base leading-relaxed">
-            {exp.description.map((desc) => <li key={desc}>{desc}</li>)}
-          </ul>
-          <div className="flex flex-wrap gap-2 pb-2">
-            {exp.tech.map((tech) => <span key={tech} className="rounded-full bg-primary-100 text-text px-3 py-1 text-xs">{tech}</span>)}
-          </div>
-        </details>
       </div>
-      <div className="shrink-0 text-xl md:text-2xl lg:text-3xl font-medium text-text-muted/50 group-hover:text-text transition-colors font-space-grotesk duration-800 ease-in-out group-hover:text-background dark:group-hover:text-secondary-100">
+      <div className="text-3xl md:text-4xl lg:text-5xl font-medium text-text-muted/50 group-hover:text-text-main transition-colors font-space-grotesk duration-800 ease-in-out group-hover:text-background">
         {exp.period}
       </div>
     </div>
@@ -149,46 +139,8 @@ const ExperienceItem = ({ exp }: { exp: (typeof experiences)[0] }) => {
 export default function ExperienceSection() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const context = gsap.context(() => {
-      const items = gsap.utils.toArray<HTMLElement>(".experience-item");
-
-      items.forEach((item) => {
-        gsap.set(item, {
-          autoAlpha: 0.3,
-          scale: 0.975,
-          transformOrigin: "center center",
-        });
-
-        ScrollTrigger.create({
-          trigger: item,
-          start: "top 60%",
-          end: "bottom 40%",
-          onToggle: ({ isActive }) => {
-            item.classList.toggle("is-active", isActive);
-            gsap.to(item, {
-              autoAlpha: isActive ? 1 : 0.3,
-              scale: isActive ? 1 : 0.975,
-              duration: 0.45,
-              ease: "power2.out",
-              overwrite: true,
-            });
-          },
-        });
-      });
-    }, container);
-
-    return () => context.revert();
-  }, []);
-
   return (
     <section
-      id="experience"
       ref={containerRef}
       className="relative w-full min-h-screen bg-background py-20 lg:py-32 flex flex-col justify-center max-w-[100vw]"
     >

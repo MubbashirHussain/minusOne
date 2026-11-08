@@ -78,7 +78,7 @@ export const ProfileImage = ({
       className={`relative flex justify-center items-center md:pt-10 h-full ${className}`}
     >
       <div
-        className="profile-frame relative w-full max-w-[420px] aspect-3/4 group cursor-pointer"
+        className="relative h-[700px] aspect-3/4 group cursor-pointer"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ perspective: "1000px" }}
@@ -118,7 +118,6 @@ export const ProfileImage = ({
                 src={imageSrc}
                 alt={imageAlt}
                 fill
-                sizes="(max-width: 640px) 80vw, (max-width: 1023px) 420px, 35vw"
                 className={`w-full border h-full object-cover contrast-125 transition-all duration-700 hover:scale-[1.03] ${
                   grayscale ? "grayscale hover:grayscale-0" : ""
                 }`}
@@ -137,7 +136,7 @@ export const ProfileImage = ({
           return (
             <div
               key={index}
-              className={`absolute text-text-inverse p-4 rounded-2xl shadow-xl block ${
+              className={`absolute text-text-inverse p-4 rounded-2xl shadow-xl hidden md:block ${
                 index === 0 ? "animate-bounce-slow" : "animate-bounce-delayed"
               } ${iconConfig.position} ${
                 iconConfig.bgClassName || iconBgStyle.className || ""

@@ -35,38 +35,49 @@ export default function Home() {
         delay: 0.4,
       });
 
-      // Keep navigation at a usable width at every viewport size.
+      // Scroll Trigger animation
       ScrollTrigger.create({
         trigger: hero,
-        start: "95% top",
-        onEnter: () => gsap.to(header, { y: 8, duration: 0.4 }),
-        onLeaveBack: () => gsap.to(header, { y: 0, duration: 0.4 }),
+        start: "95% top", // When 80% of hero is at top of viewport
+        onEnter: () => {
+          gsap.to(header, {
+            left: "80%",
+            xPercent: -90,
+            duration: 0.5,
+            ease: "power3.out",
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(header, {
+            left: "50%", // Reset to original center position (SideTab default is left="50%")
+            xPercent: -50, // Reset to original center transform (SideTab default is -translate-x-1/2 which is -50%)
+            duration: 0.5,
+            ease: "power3.out",
+          });
+        },
       });
     }, mainRef);
 
     return () => ctx.revert();
   }, []);
   return (
-    <main id="home" className="w-full min-w-0" ref={mainRef}>
-      <div className="absolute bottom-0 w-full bg-transparent z-[100]">
-        <Terminal />
-      </div>
+    <main className="max-w-screen" ref={mainRef}>
+      <Terminal />
       {/* Header */}
 
       <Header
         ref={headerRef}
         // links={navLinks}
-        className="portfolio-header h-16"
+        className=""
         bgClassName="bg-secondary"
         textClassName="text-text-inverse"
-        // We'll control width/height via Tailwind classes for responsiveness
-        style={{ position: "fixed" }}
+        width="30%"
+        height="7%"
+        // We'll control horizontal position via GSAP
+        style={{ position: "fixed" }} // Ensure it's fixed as per SideTab default, but we might need to override if SideTab sets it. SideTab sets fixed.
       />
-      <div
-        className="hero-shell bg-primary relative lg:sticky lg:top-0 z-30 dark:bg-background"
-        ref={heroRef}
-      >
-        <Container className="hero-container bg-background dark:bg-primary relative px-0 md:px-0">
+      <div className="bg-primary sticky top-0 z-30" ref={heroRef}>
+        <Container className="h-screen bg-background relative max-h-[1020px]">
           <HeroSection />
         </Container>
       </div>

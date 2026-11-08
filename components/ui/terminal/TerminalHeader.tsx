@@ -41,7 +41,7 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         project_root/
       </span>
       <span
-        className="ml-2 text-[10px] sm:text-sm font-light italic transition-colors duration-500 opacity-80"
+        className="ml-2 text-sm font-light italic transition-colors duration-500 opacity-80"
         style={{ color: palette.accent }}
       >
         [Tech: React/Tailwind]

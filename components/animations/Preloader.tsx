@@ -29,7 +29,7 @@ export default function Preloader({
     // Simulate loading progress
     const timer = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + Math.random() * 2.5;
+        const next = prev + Math.random() * 1.5;
         if (next >= 100) {
           clearInterval(timer);
           setTimeout(() => {
@@ -62,7 +62,7 @@ export default function Preloader({
             duration: 0.8,
             ease: "power2.out",
           },
-          "-=0.5"
+          "-=0.5",
         )
         .from(
           ".loading-box .text-8xl",
@@ -71,7 +71,7 @@ export default function Preloader({
             duration: 0.8,
             ease: "power2.out",
           },
-          "<>+=0.9"
+          "<>+=0.9",
         );
     });
     return () => ctx.revert();

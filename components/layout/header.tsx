@@ -81,41 +81,45 @@ export const Header = React.forwardRef(
   (
     {
       links = [
-        { label: "Home", href: "#home", rel: "noopener noreferrer" },
-        { label: "Philosophy", href: "#philosophy", rel: "noopener noreferrer" },
-        { label: "Portfolio", href: "#portfolio", rel: "noopener noreferrer" },
-        { label: "Experience", href: "#experience", rel: "noopener noreferrer" },
-        { label: "Contact", href: "#contact", rel: "noopener noreferrer" },
+        { label: "Home", href: "#", rel: "noopener noreferrer" },
+        { label: "Services", href: "#", rel: "noopener noreferrer" },
+        { label: "Portfolio", href: "#", rel: "noopener noreferrer" },
+        { label: "Blog", href: "#", rel: "noopener noreferrer" },
+        { label: "Contact", href: "#", rel: "noopener noreferrer" },
       ],
       bgClassName,
       backgroundColor,
       textClassName,
       textColor,
-      width,
-      height,
+      width = "30%",
+      height = "7%",
       radius = "40px",
-      cornerSize = 16,
+      cornerSize = 40,
       className = "",
       style,
-      navGap = "gap-1 sm:gap-3",
+      navGap = "gap-8",
     }: HeaderProps,
-    ref,
+    ref
   ) => {
     const textColorStyle = textColor ? getColorStyle(textColor, "text") : {};
+    const bgStyle = backgroundColor
+      ? getColorStyle(backgroundColor, "bg-secondary")
+      : {};
+
     return (
       <SideTab
-        ref={ref as React.ForwardedRef<HTMLDivElement>}
+        ref={ref as any}
         top="0"
         left="50%"
-        className={`-translate-x-1/2 flex items-center justify-center fixed top-0 z-50 ${className} max-h-[100px]`}
+        className={`-left-[50%] -translate-x-1/2 flex items-center justify-center fixed top-0 z-50 ${className} max-h-[100px]`}
         style={style}
         color={backgroundColor}
         bgClassName={bgClassName}
         eachCorner={{
           br: { enabled: false },
-          tr: { enabled: true, backgroundColor: bgClassName || "bg-secondary" },
+          tr: { enabled: true, backgroundColor: "bg-secondary" },
           bl: { enabled: false },
-          tl: { enabled: true, backgroundColor: bgClassName || "bg-secondary" },
+          tl: { enabled: true, backgroundColor: "bg-secondary" },
         }}
         radius={radius}
         side="top"
@@ -123,19 +127,19 @@ export const Header = React.forwardRef(
         width={width}
         cornerSize={cornerSize}
       >
-        <nav aria-label="Main navigation" className="w-full px-2 sm:px-4">
-          <ul className={`flex items-center justify-between ${navGap}`}>
+        <nav className="flex flex-col gap-2">
+          <ul className={`flex ${navGap}`}>
             {links.map((link, index) => (
               <li
                 key={index}
-                className={`whitespace-nowrap text-[9px] min-[380px]:text-[11px] sm:text-sm ${textClassName || textColorStyle.className || ""}`}
+                className={textClassName || textColorStyle.className || ""}
                 style={textColorStyle.style}
               >
                 <a
                   href={link.href}
                   target={link.target}
                   rel={link.rel}
-                  className="flex min-h-11 items-center px-1 hover:text-primary transition-colors"
+                  className="hover:opacity-80 transition-opacity"
                 >
                   {link.label}
                 </a>
@@ -145,7 +149,7 @@ export const Header = React.forwardRef(
         </nav>
       </SideTab>
     );
-  },
+  }
 );
 
 Header.displayName = "Header";
