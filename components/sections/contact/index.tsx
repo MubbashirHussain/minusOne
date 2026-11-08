@@ -19,15 +19,16 @@ export default function ContactSection() {
   const y = useTransform(scrollYProgress, [0, 1], [-100, 0]);
   return (
     <section
+      id="contact"
       ref={containerRef}
       className="relative z-30 bg-secondary dark:bg-secondary-100 text-white overflow-hidden min-h-[calc(100dvh+5px)] flex flex-col justify-center py-10 lg:py-16 "
     >
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row justify-between items-start md:items-end gap-12 lg:gap-20">
           <div className="flex flex-col gap-8 max-w-3xl">
             <motion.h2
               style={{ y }}
-              className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-border dark:text-secondary-300 hover:text-primary transition-colors duration-500 cursor-default"
+              className="text-[clamp(2.75rem,7.5vw,7rem)] font-bold tracking-tighter text-border dark:text-secondary-300 hover:text-primary transition-colors duration-500 cursor-default"
             >
               {/* <InteractiveContactCard> */}
               Let's create <br />
@@ -53,7 +54,7 @@ export default function ContactSection() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-8 items-end">
+          <div className="flex flex-col gap-8 items-start lg:items-end">
             <div className="flex gap-6">
               {[
                 { icon: Github, href: "https://github.com", label: "Github" },
@@ -80,20 +81,20 @@ export default function ContactSection() {
               ))}
             </div>
 
-            <div className="text-right text-secondary-400 font-space-grotesk">
+            <div className="text-left lg:text-right text-secondary-400 font-space-grotesk">
               <p className="text-sm">
                 Based in <span className="text-white">Pakistan</span>
               </p>
-              <p className="text-sm mt-1 flex items-center justify-end gap-2">
+              <p className="text-sm mt-1 flex items-center lg:justify-end gap-2">
                 Local time: <Clock />
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 pt-12 border-t border-secondary-800 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-secondary-500 font-space-grotesk">
+        <div className="mt-12 pt-12 border-t border-secondary-800 flex flex-col lg:flex-row justify-between items-center gap-6 text-sm text-secondary-500 font-space-grotesk">
           <p>© {new Date().getFullYear()} Mubbashir. All rights reserved.</p>
-          <div className="flex gap-8">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             <Link
               href="#"
               className="hover:text-primary transition-colors cursor-button"

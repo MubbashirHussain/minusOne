@@ -109,8 +109,8 @@ interface SideTabProps {
 export const SideTab = React.forwardRef<HTMLDivElement, SideTabProps>(
   (
     {
-      width = "100px",
-      height = "90px",
+      width,
+      height,
       top,
       left,
       right,
@@ -170,8 +170,8 @@ export const SideTab = React.forwardRef<HTMLDivElement, SideTabProps>(
 
     // Determine styles for the main tab
     let mainTabStyles: React.CSSProperties = {
-      width: width,
-      height: height,
+      ...(width !== undefined && { width }),
+      ...(height !== undefined && { height }),
       top,
       left,
       right,

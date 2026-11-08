@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type MotionValue } from "framer-motion";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { colors } from "@/config/colors";
@@ -38,14 +38,46 @@ export function ProjectCard({
   isExpanded: boolean;
   isHidden?: boolean;
   isClosing?: boolean;
-  onClick: () => void;
+  onClick: (element?: HTMLDivElement) => void;
   onClose?: () => void;
   cardRef?: React.RefObject<HTMLDivElement | null>;
-  rotate?: any;
+  rotate?: MotionValue<number> | number;
   originRect?: DOMRect | null;
 }) {
+  const dialogRef = React.useRef<HTMLDivElement>(null);
+  const closeRef = React.useRef(onClick);
+  React.useEffect(() => { closeRef.current = onClick; }, [onClick]);
+  React.useEffect(() => {
+    if (!isExpanded) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    dialog?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeRef.current();
+      if (event.key === "Tab") {
+        const targets = dialog?.querySelectorAll<HTMLElement>('button, a[href], [tabindex="0"]');
+        if (!targets?.length) return;
+        const first = targets[0];
+        const last = targets[targets.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog)) {
+          event.preventDefault(); first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); previous?.focus(); };
+  }, [isExpanded]);
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [viewport, setViewport] = React.useState({ width: 1200, height: 800 });
+  React.useEffect(() => {
+    const resize = () => setViewport({ width: window.innerWidth, height: window.innerHeight });
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
 
   React.useEffect(() => {
     setMounted(true);
@@ -56,8 +88,8 @@ export function ProjectCard({
   const themeColors = isDark ? colors.dark : colors.light;
 
   // Expanded positioning (only used when isExpanded)
-  const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
-  const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+  const vw = viewport.width;
+  const vh = viewport.height;
   const targetW = vw * 0.9;
   const targetH = vh * 0.9;
   const toX = (vw - targetW) / 2;
@@ -65,7 +97,7 @@ export function ProjectCard({
 
   const isExpandedAnim = isExpanded && originRect;
   const initRotate =
-    typeof window !== "undefined" ? (window as any)._expandRotation || 0 : 0;
+    typeof window !== "undefined" ? (window as Window & { _expandRotation?: number })._expandRotation || 0 : 0;
 
   // Animation states for the expanded card
   const expandedInitial = isExpandedAnim
@@ -124,8 +156,17 @@ export function ProjectCard({
 
   return (
     <motion.div
-      ref={!isExpanded ? cardRef : undefined}
-      onClick={isExpanded ? undefined : onClick}
+      ref={isExpanded ? dialogRef : cardRef}
+      role={isExpanded ? "dialog" : "button"}
+      aria-modal={isExpanded ? true : undefined}
+      aria-label={isExpanded ? title : `Explore ${title}`}
+      tabIndex={isExpanded ? -1 : isHidden ? -1 : 0}
+      onKeyDown={isExpanded ? undefined : (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault(); onClick(event.currentTarget);
+        }
+      }}
+      onClick={isExpanded ? undefined : (event) => onClick(event.currentTarget)}
       className={`overflow-hidden ${
         isExpanded
           ? `shadow-[0_0_50px_rgba(0,0,0,0.5)] border cursor-default! ${isDark ? "border-white/10" : "border-black/10"}`
@@ -150,6 +191,8 @@ export function ProjectCard({
       exit={expandedExit}
       transition={SPRING}
     >
+      {isExpanded && <button type="button" onClick={() => onClick()} aria-label="Close project"
+        className="absolute top-3 right-3 z-30 grid size-11 place-items-center rounded-full bg-black/80 text-white text-2xl">×</button>}
       {/* Accent bar */}
       {/* <div
         className="absolute top-0 left-0 w-full h-1 z-10"
@@ -174,7 +217,7 @@ export function ProjectCard({
         }}
       /> */}
       <motion.div
-        className="absolute inset-y-0 right-0 overflow-hidden"
+        className={`${isExpanded ? "project-expanded-image" : ""} absolute inset-y-0 right-0 overflow-hidden`}
         initial={{
           width: "100%",
           left: "0%",
@@ -201,7 +244,8 @@ export function ProjectCard({
           src={
             "/images/projects/hotel-booking-mobile-app-ui-ux-mockup_206192-1947.jpg"
           }
-          alt="Person"
+          alt={`${title} project preview`}
+          sizes="(max-width: 1023px) 90vw, 60vw"
           fill
           priority={isExpanded}
           className="object-cover"
@@ -278,7 +322,7 @@ export function ProjectCard({
         {isExpanded && !isClosing && (
           <motion.div
             key="expanded"
-            className={`absolute inset-y-0 left-0 w-[40%] p-12 flex flex-col justify-center overflow-hidden bg-gradient-to-r ${isDark ? "from-[#1a1a1a] via-[#1a1a1a]" : "from-white via-white"} to-transparent z-10`}
+            className={`project-expanded-content absolute inset-y-0 left-0 w-[40%] p-6 xl:p-12 flex flex-col justify-center overflow-y-auto bg-gradient-to-r ${isDark ? "from-[#1a1a1a] via-[#1a1a1a]" : "from-white via-white"} to-transparent z-10`}
             initial={{ opacity: 0, x: -40, width: "0%" }}
             animate={{
               opacity: 1,

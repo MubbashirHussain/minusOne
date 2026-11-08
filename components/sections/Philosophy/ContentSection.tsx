@@ -15,7 +15,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data, isActive }) => {
   return (
     <section
       id={data.id}
-      className="scroll-mt-8 mb-24 relative group last:mb-0"
+      className="scroll-mt-28 mb-24 relative group last:mb-0"
     >
       <div className="flex items-center gap-4 md:gap-0 mb-6 relative z-10">
         {/* Timeline Icon Node 
@@ -67,7 +67,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data, isActive }) => {
         ${
           isActive
             ? "text-text-muted opacity-100"
-            : "text-text-muted/60 opacity-80"
+            : "text-text-secondary opacity-100"
         }
       `}
       >

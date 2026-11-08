@@ -51,8 +51,8 @@ export const ImageGallery = React.forwardRef(
       bgClassName,
       backgroundColor = "primary",
       borderRadius = "60px",
-      width = "50%",
-      height = "30%",
+      width,
+      height,
       position = { bottom: "0", left: "0" },
       gap = "gap-6",
       padding = "p-10 pb-12 md:pb-0",
@@ -66,8 +66,8 @@ export const ImageGallery = React.forwardRef(
     const positionStyles: React.CSSProperties = {
       ...bgStyle.style,
       borderTopRightRadius: borderRadius,
-      width,
-      height,
+      ...(width ? { width: width } : {}),
+      ...(height ? { height: height } : {}),
       ...position,
     };
 

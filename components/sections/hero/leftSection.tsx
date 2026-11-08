@@ -82,9 +82,9 @@ export const HeroLeftSection = ({
   }, []);
 
   return (
-    <div className={`flex flex-col justify-start md:pr-12 ${className}`}>
-      {/* Decorative Side Tabs */}
-      <div className="">
+    <div className={`flex flex-col justify-start lg:pr-8 ${className}`}>
+      {/* Decorative Side Tabs - Hidden on Tablet/Mobile */}
+      <div className="hidden lg:block">
         <SideTab
           ref={blobRef}
           top="13.5%"
@@ -161,9 +161,9 @@ export const HeroLeftSection = ({
         )}
 
         {/* Heading */}
-        <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.1] mb-6 tracking-tight text-text">
+        <h1 className="text-[clamp(2.5rem,5vw,3.75rem)] font-extrabold leading-[1.1] mb-6 tracking-tight text-text">
           Hey, I am{" "}
-          <span className="relative">
+          <span className="relative inline-block">
             {name}
             {/* Underline decoration */}
             <svg
@@ -186,7 +186,7 @@ export const HeroLeftSection = ({
         </h1>
 
         {/* Description */}
-        <p className="text-text-secondary text-lg leading-relaxed mb-10 max-w-lg font-space-grotesk">
+        <p className="text-text-secondary text-base md:text-lg leading-relaxed mb-10 max-w-lg font-space-grotesk">
           {description}
         </p>
 
@@ -194,7 +194,7 @@ export const HeroLeftSection = ({
         <InteractiveHoverButton
           onClick={onCtaClick}
           text={ctaText}
-          className="w-fit px-8 py-4 mb-16 md:mb-24 text-lg cursor-navigation"
+          className="w-fit px-8 py-4 mb-0 text-lg cursor-navigation"
         />
       </div>
     </div>

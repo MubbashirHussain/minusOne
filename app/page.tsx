@@ -35,45 +35,19 @@ export default function Home() {
         delay: 0.4,
       });
 
-      // Scroll Trigger animation
+      // Keep navigation at a usable width at every viewport size.
       ScrollTrigger.create({
         trigger: hero,
-        start: "95% top", // When 95% of hero is at top of viewport
-        onEnter: () => {
-          gsap.to(header, {
-            left: "80%",
-            x: 0, // Clear the parsed CSS matrix translation
-            xPercent: -90,
-            duration: 0.5,
-            ease: "power3.out",
-          });
-        },
-        onLeaveBack: () => {
-          gsap.to(header, {
-            left: "50%", // Reset to original center position
-            x: 0, // Clear the parsed CSS matrix translation
-            xPercent: -50, // Reset to original center transform
-            duration: 0.5,
-            ease: "power3.out",
-          });
-        },
-        onRefresh: (self) => {
-          // Handle initial state on reload
-          if (self.isActive) {
-            gsap.set(header, {
-              left: "80%",
-              x: 0,
-              xPercent: -90,
-            });
-          }
-        },
+        start: "95% top",
+        onEnter: () => gsap.to(header, { y: 8, duration: 0.4 }),
+        onLeaveBack: () => gsap.to(header, { y: 0, duration: 0.4 }),
       });
     }, mainRef);
 
     return () => ctx.revert();
   }, []);
   return (
-    <main className="max-w-screen" ref={mainRef}>
+    <main id="home" className="w-full min-w-0" ref={mainRef}>
       <div className="absolute bottom-0 w-full bg-transparent z-[100]">
         <Terminal />
       </div>
@@ -82,19 +56,17 @@ export default function Home() {
       <Header
         ref={headerRef}
         // links={navLinks}
-        className=""
+        className="portfolio-header h-16"
         bgClassName="bg-secondary"
         textClassName="text-text-inverse"
-        width="30%"
-        height="7%"
-        // We'll control horizontal position via GSAP
-        style={{ position: "fixed" }} // Ensure it's fixed as per SideTab default, but we might need to override if SideTab sets it. SideTab sets fixed.
+        // We'll control width/height via Tailwind classes for responsiveness
+        style={{ position: "fixed" }}
       />
       <div
-        className="bg-primary sticky top-0 z-30 dark:bg-background"
+        className="hero-shell bg-primary relative lg:sticky lg:top-0 z-30 dark:bg-background"
         ref={heroRef}
       >
-        <Container className="h-screen bg-background dark:bg-primary relative max-h-[1020px] px-0 md:px-0">
+        <Container className="hero-container bg-background dark:bg-primary relative px-0 md:px-0">
           <HeroSection />
         </Container>
       </div>

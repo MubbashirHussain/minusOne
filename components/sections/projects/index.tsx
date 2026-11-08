@@ -1,6 +1,12 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   useScroll,
@@ -71,16 +77,16 @@ export default function ProjectsSection() {
   const [hiddenIndex, setHiddenIndex] = useState<number | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [originRect, setOriginRect] = useState<DOMRect | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Lock body scroll while card is open
   useEffect(() => {
@@ -97,7 +103,7 @@ export default function ProjectsSection() {
       setHiddenIndex(index);
       setIsClosing(false);
       // Store the initial rotation so the expanded card can animate from it
-      (window as any)._expandRotation = rotation;
+      (window as Window & { _expandRotation?: number })._expandRotation = rotation;
     },
     [],
   );
@@ -113,11 +119,11 @@ export default function ProjectsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="h-[500vh] relative z-20">
+    <section id="portfolio" ref={sectionRef} className="project-section h-[500vh] relative z-20">
       {/* Sticky viewport */}
-      <div className="sticky top-0 h-screen overflow-hidden project_bg">
+      <div className="project-viewport sticky top-0 h-screen overflow-hidden project_bg">
         {/* Heading */}
-        <div className="absolute top-10 left-0 w-full z-10 pointer-events-none">
+        <div className="project-heading absolute top-24 left-0 w-full z-10 pointer-events-none">
           <Container className="px-6 md:px-10 lg:px-20">
             <SectionHeading
               title="Projects"
@@ -130,7 +136,6 @@ export default function ProjectsSection() {
         {/* Horizontal scroller */}
         <HorizontalScroller
           scrollYProgress={scrollYProgress}
-          activeIndex={activeIndex}
           hiddenIndex={hiddenIndex}
           onExpand={handleExpand}
         />
@@ -185,12 +190,10 @@ export default function ProjectsSection() {
 // ─── Horizontal Scroller ────────────────────────────────────────────
 function HorizontalScroller({
   scrollYProgress,
-  activeIndex,
   hiddenIndex,
   onExpand,
 }: {
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
-  activeIndex: number | null;
   hiddenIndex: number | null;
   onExpand: (index: number, rect: DOMRect, rotation: number) => void;
 }) {
@@ -217,8 +220,8 @@ function HorizontalScroller({
   return (
     // Outer container: positioned to start the first card at 50vw
     <div
-      className="absolute inset-0 flex items-center"
-      style={{ paddingLeft: "50vw" }}
+      className="project-scroll-track absolute inset-0 flex items-center"
+      style={{ paddingLeft: "50vw", paddingTop: 160 }}
     >
       <motion.div
         ref={trackRef}

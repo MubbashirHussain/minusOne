@@ -2,8 +2,6 @@ import React from "react";
 import { SideTab } from "@/components/ui/side-tab";
 import { getColorStyle } from "@/lib/color-utils";
 import { FloatingIcon } from "../ui/profile-image";
-import { ThemeToggle } from "../ui/theme-toggle";
-import { useTheme } from "next-themes";
 
 export interface NavLink {
   /** Display text for the link */
@@ -83,37 +81,30 @@ export const Header = React.forwardRef(
   (
     {
       links = [
-        { label: "Home", href: "#", rel: "noopener noreferrer" },
-        { label: "Services", href: "#", rel: "noopener noreferrer" },
-        { label: "Portfolio", href: "#", rel: "noopener noreferrer" },
-        { label: "Blog", href: "#", rel: "noopener noreferrer" },
-        { label: "Contact", href: "#", rel: "noopener noreferrer" },
+        { label: "Home", href: "#home", rel: "noopener noreferrer" },
+        { label: "Philosophy", href: "#philosophy", rel: "noopener noreferrer" },
+        { label: "Portfolio", href: "#portfolio", rel: "noopener noreferrer" },
+        { label: "Experience", href: "#experience", rel: "noopener noreferrer" },
+        { label: "Contact", href: "#contact", rel: "noopener noreferrer" },
       ],
       bgClassName,
       backgroundColor,
       textClassName,
       textColor,
-      width = "30%",
-      height = "7%",
+      width,
+      height,
       radius = "40px",
-      cornerSize = 40,
+      cornerSize = 16,
       className = "",
       style,
-      navGap = "gap-8",
+      navGap = "gap-1 sm:gap-3",
     }: HeaderProps,
     ref,
   ) => {
     const textColorStyle = textColor ? getColorStyle(textColor, "text") : {};
-    const bgStyle = backgroundColor
-      ? getColorStyle(backgroundColor, "bg-secondary")
-      : {};
-
-    const { theme } = useTheme();
-
     return (
       <SideTab
-        key={theme}
-        ref={ref as any}
+        ref={ref as React.ForwardedRef<HTMLDivElement>}
         top="0"
         left="50%"
         className={`-translate-x-1/2 flex items-center justify-center fixed top-0 z-50 ${className} max-h-[100px]`}
@@ -132,19 +123,19 @@ export const Header = React.forwardRef(
         width={width}
         cornerSize={cornerSize}
       >
-        <nav className="flex flex-col gap-2">
-          <ul className={`flex ${navGap}`}>
+        <nav aria-label="Main navigation" className="w-full px-2 sm:px-4">
+          <ul className={`flex items-center justify-between ${navGap}`}>
             {links.map((link, index) => (
               <li
                 key={index}
-                className={textClassName || textColorStyle.className || ""}
+                className={`whitespace-nowrap text-[9px] min-[380px]:text-[11px] sm:text-sm ${textClassName || textColorStyle.className || ""}`}
                 style={textColorStyle.style}
               >
                 <a
                   href={link.href}
                   target={link.target}
                   rel={link.rel}
-                  className="hover:opacity-80 transition-opacity"
+                  className="flex min-h-11 items-center px-1 hover:text-primary transition-colors"
                 >
                   {link.label}
                 </a>
