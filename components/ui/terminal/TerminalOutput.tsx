@@ -2,14 +2,14 @@ import React from "react";
 import { Palette } from "./types";
 
 interface TerminalOutputProps {
-  terminalRef: React.RefObject<HTMLDivElement>;
+  terminalRef: React.RefObject<HTMLDivElement | null>;
   palette: Palette;
   isTerminalOpen: boolean;
   history: string[];
   currentDir: string;
   input: string;
   isTyping: boolean;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onFocusInput: () => void;
@@ -44,7 +44,7 @@ export const TerminalOutput: React.FC<TerminalOutputProps> = ({
         history.map((line, index) => (
           <pre
             key={index}
-            className="whitespace-pre-wrap"
+            className="whitespace-pre-wrap break-words"
             dangerouslySetInnerHTML={{ __html: line }}
           ></pre>
         ))}
@@ -62,8 +62,9 @@ export const TerminalOutput: React.FC<TerminalOutputProps> = ({
           <input
             ref={inputRef}
             type="text"
+            aria-label="Terminal command"
             className="bg-transparent outline-none max-w-full caret-transparent p-0 m-0 border-none appearance-none text-lg leading-relaxed focus:ring-0"
-            style={{ width: `${input.length}ch`, color: palette.accent }}
+            style={{ width: `${Math.max(1, input.length)}ch`, color: palette.accent }}
             value={input}
             onChange={(e) => onInputChange(e.target.value)}
             onKeyDown={onKeyDown}

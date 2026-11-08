@@ -75,6 +75,8 @@ export default function ProjectsSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [hiddenIndex, setHiddenIndex] = useState<number | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
   const [isClosing, setIsClosing] = useState(false);
   const [originRect, setOriginRect] = useState<DOMRect | null>(null);
   const mounted = useSyncExternalStore(
@@ -90,9 +92,11 @@ export default function ProjectsSection() {
 
   // Lock body scroll while card is open
   useEffect(() => {
-    document.body.style.overflow = activeIndex !== null ? "hidden" : "";
+    if (activeIndex === null) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previous;
     };
   }, [activeIndex]);
 
@@ -112,7 +116,9 @@ export default function ProjectsSection() {
     // 1) Animate content out first
     setIsClosing(true);
     // 2) After content exits (~1000ms), shrink the card box
-    setTimeout(() => {
+    if (closeTimer.current) return;
+    closeTimer.current = setTimeout(() => {
+      closeTimer.current = null;
       setActiveIndex(null);
       setIsClosing(false);
     }, 1000);
@@ -133,6 +139,14 @@ export default function ProjectsSection() {
           </Container>
         </div>
 
+        <Container className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
+          {projects.map((project, index) => (
+            <div key={project.title} className="h-[380px] min-w-0">
+              <ProjectCard {...project} index={index} isExpanded={false} isHidden={hiddenIndex === index}
+                onClick={element => { if (element) handleExpand(index, element.getBoundingClientRect(), 0); }} />
+            </div>
+          ))}
+        </Container>
         {/* Horizontal scroller */}
         <HorizontalScroller
           scrollYProgress={scrollYProgress}
@@ -215,7 +229,7 @@ function HorizontalScroller({
   // useTransform drives translateX of the track.
   const totalScrollWidth = (totalCards - 1) * stride;
 
-  const x = useTransform(smooth, [1, 0], [0, -totalScrollWidth]);
+  const x = useTransform(smooth, [0, 1], [0, -totalScrollWidth]);
 
   return (
     // Outer container: positioned to start the first card at 50vw

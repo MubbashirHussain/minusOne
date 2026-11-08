@@ -54,7 +54,7 @@ export default function Terminal() {
 
   // Run boot sequence when visible
   useEffect(() => {
-    runBootSequence();
+    if (isVisible) runBootSequence();
   }, [isVisible]);
 
   // Scroll isolation hook
@@ -90,6 +90,9 @@ export default function Terminal() {
         aria-label="Open terminal">&gt;_ Terminal</button>}
       <div
         ref={containerRef}
+        inert={!isVisible}
+        aria-hidden={!isVisible}
+        data-lenis-prevent
         className={`fixed bottom-0 left-0 w-full shadow-2xl z-20 transition-transform duration-500 ease-in-out flex flex-col ${
           isResizing ? "resizing" : ""
         }`}
@@ -132,14 +135,14 @@ export default function Terminal() {
         />
 
         <TerminalOutput
-          terminalRef={terminalRef as any}
+          terminalRef={terminalRef}
           palette={palette}
           isTerminalOpen={isTerminalOpen}
           history={history}
           currentDir={currentDir}
           input={input}
           isTyping={isTyping}
-          inputRef={inputRef as any}
+          inputRef={inputRef}
           onInputChange={setInput}
           onKeyDown={handleKeyPress}
           onFocusInput={focusInput}

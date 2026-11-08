@@ -245,3 +245,10 @@ body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
+
+@media (max-width: 1023px) {
+  .project-section { height: auto !important; }
+  .project-viewport { position: relative !important; height: auto !important; padding: 4rem 0; }
+  .project-heading { position: relative !important; top: auto !important; margin-bottom: 2rem; }
+  .project-scroll-track { display: none !important; }
+}

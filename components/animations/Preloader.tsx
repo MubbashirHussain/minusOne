@@ -1,164 +1,60 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useTransform,
-  useSpring,
-} from "framer-motion";
-import gsap from "gsap";
-import { SideTab } from "../ui/side-tab";
-import DotGridBackground from "../layout/dotGridBackround";
+import { motion, useReducedMotion } from "framer-motion";
 import { NodeFlowApp } from "../flow/NodeFlowApp";
 
-export default function Preloader({
-  onFinish,
-  isShown,
-}: {
-  onFinish?: () => void;
-  isShown?: boolean;
-}) {
-  const [isLoading, setIsLoading] = useState(true);
+// A short, skippable introduction: the percentage describes the animation,
+// rather than pretending to measure network or build progress.
+export default function Preloader({ onFinish }: { onFinish: () => void }) {
   const [progress, setProgress] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dotGridRef = useRef<HTMLDivElement>(null);
+  const [canvas, setCanvas] = useState({ width: 1100, height: 700, scale: 1 });
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    // Simulate loading progress
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + Math.random() * 2.5;
-        if (next >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            if (onFinish) onFinish(); // Mount content first
-            setIsLoading(false); // Then start exit animation
-          }, 800);
-          return 100;
-        }
-        return next;
-      });
-    }, 100);
-    return () => clearInterval(timer);
-  }, [onFinish]);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
-      tl.from(containerRef.current, {
-        duration: 0.8,
-        scale: 1.2,
-        delay: 1,
-        ease: "power2.out",
-      })
-        .from(
-          ".loading-box",
-          {
-            x: containerRef.current?.offsetWidth
-              ? containerRef.current.offsetWidth / 5
-              : 100,
-            duration: 0.8,
-            ease: "power2.out",
-          },
-          "-=0.5"
-        )
-        .from(
-          ".loading-box .text-8xl",
-          {
-            scale: 0.3,
-            duration: 0.8,
-            ease: "power2.out",
-          },
-          "<>+=0.9"
-        );
+    const element = canvasRef.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width < 600 ? 440 : 1100;
+      const height = width === 440 ? 920 : 700;
+      setCanvas({ width, height, scale: Math.min(entry.contentRect.width / width, entry.contentRect.height / height, 1) });
     });
-    return () => ctx.revert();
-  }, [isLoading, onFinish]);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const duration = reducedMotion ? 300 : 9000;
+    const start = performance.now();
+    const timer = window.setInterval(() => {
+      setProgress(Math.min(100, Math.round((performance.now() - start) / duration * 100)));
+    }, 100);
+    const finish = window.setTimeout(onFinish, duration + 200);
+    return () => { clearInterval(timer); clearTimeout(finish); };
+  }, [onFinish, reducedMotion]);
 
   return (
-    <AnimatePresence mode="wait">
-      {isLoading && isShown && (
-        <motion.div
-          ref={containerRef}
-          className="absolute h-full w-full z-50 flex flex-col items-center justify-center bg-background-inverse text-white opacity-100 p-10"
-          animate={{
-            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-          }}
-          exit={{
-            clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-          }}
-          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-        >
-          <div className="w-full h-full z-0 rounded-3xl over bg-background flex items-center justify-center relative">
-            <div className="w-full h-full" ref={dotGridRef}>
-              <NodeFlowApp />
-            </div>
-            <div className="loading-box bg-background-inverse w-fit self-end absolute bottom-0 right-0 rounded-tl-3xl">
-              <div className="relative flex items-center border-primary p-5">
-                <motion.div className="text-8xl md:text-9xl font-bold font-outfit tracking-tighter text-primary mx-1 text-right">
-                  {Math.min(100, Math.floor(progress))}%
-                </motion.div>
-                <SideTab
-                  // top=""
-                  bottom="0%"
-                  left="1%"
-                  className={`flex pointer-events-auto`}
-                  eachCorner={{
-                    br: {
-                      enabled: true,
-                      backgroundColor: "bg-background-inverse",
-                    },
-                    tr: { enabled: false },
-                    bl: {
-                      enabled: false,
-                    },
-                    tl: { enabled: false },
-                  }}
-                  radius={"30px"}
-                  side="bottom"
-                  //   height={"0%"}
-                  width={"0%"}
-                  cornerSize={50}
-                />
-                <SideTab
-                  // top=""
-                  top="0%"
-                  right="-1%"
-                  className={`flex pointer-events-auto`}
-                  eachCorner={{
-                    br: {
-                      enabled: true,
-                      backgroundColor: "background-inverse",
-                    },
-                    tr: { enabled: false },
-                    bl: {
-                      enabled: false,
-                    },
-                    tl: { enabled: false },
-                  }}
-                  radius={"30px"}
-                  side="right"
-                  //   height={"0%"}
-                  width={"0%"}
-                  cornerSize={50}
-                />
-              </div>
-
-              {/* <div className="w-64 h-1 bg-white/10 rounded-full mt-8 overflow-hidden">
-                <motion.div
-                  className="h-full bg-primary"
-                  initial={{ width: "0%" }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.1, ease: "linear" }}
-                />
-              </div> */}
-            </div>
-          </div>
-          {/* <div className="border-50 z-50 inset-10 rounded-3xl border-black w-full h-full absolute"></div> */}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <motion.section
+      aria-label="Portfolio introduction"
+      className="fixed inset-0 z-[300] flex flex-col bg-background p-4 text-text sm:p-8"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+      transition={{ duration: reducedMotion ? 0 : 0.3 }}
+    >
+      <div className="flex items-center justify-between gap-4 pb-4">
+        <p className="font-space-grotesk text-sm">Mubbashir / Creative Developer</p>
+        <button autoFocus onClick={onFinish} className="shrink-0 rounded-full border border-current px-4 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-4">Skip intro</button>
+      </div>
+      <div ref={canvasRef} className="relative min-h-0 flex-1 overflow-hidden rounded-3xl border border-text/10">
+        <div className="absolute left-1/2 top-1/2" style={{ width: canvas.width, height: canvas.height, transform: `translate(-50%, -50%) scale(${canvas.scale})` }}>
+          {!reducedMotion && <NodeFlowApp />}
+        </div>
+      </div>
+      <div className="flex items-end justify-between gap-4 pt-4">
+        <div><p className="text-xl font-semibold sm:text-3xl">Generating my digital world</p><p className="mt-1 text-sm text-text-muted">An introduction to the ideas behind the portfolio.</p></div>
+        <span aria-hidden="true" className="text-4xl font-bold tabular-nums sm:text-6xl">{progress}%</span>
+      </div>
+      <div role="progressbar" aria-label="Introduction progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} className="mt-4 h-1 overflow-hidden rounded bg-text/10"><div className="h-full bg-primary transition-[width]" style={{ width: `${progress}%` }} /></div>
+    </motion.section>
   );
 }

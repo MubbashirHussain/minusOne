@@ -75,44 +75,26 @@ export const NodeFlowApp = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Use a small timeout to ensure the container has fully rendered
-    const timer = setTimeout(() => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      console.log("container dimensions", width, height, containerRef);
-
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      const compact = width < 600;
       setNodesPosition([
-        {
-          node: 1,
-          positions: {
-            top: (height / 100) * 12,
-            left: (width / 100) * 12,
-          },
-        },
-        {
-          node: 2,
-          positions: {
-            top: (height / 100) * 40,
-            left: (width / 100) * 35,
-          },
-        },
-        {
-          node: 3,
-          positions: {
-            top: (height / 100) * 20,
-            left: (width / 100) * 60,
-          },
-        },
+        { node: 1, positions: { top: compact ? 35 : height * 0.12, left: width * 0.12 } },
+        { node: 2, positions: { top: compact ? 300 : height * 0.4, left: width * 0.35 } },
+        { node: 3, positions: { top: compact ? 565 : height * 0.2, left: width * (compact ? 0.12 : 0.6) } },
       ]);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [dotGridRef.current]); // Empty dependency array - run only once on mount
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Dragging Logic State
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPlaying(true), 2300);
+    return () => clearTimeout(timer);
+  }, []);
 
   // GSAP Animation Effect
   useEffect(() => {
@@ -129,7 +111,7 @@ export const NodeFlowApp = () => {
     // Step 1: Animate Node 1 in
     tl.to(node1Ref.current, {
       opacity: 1,
-      duration: 0.5,
+      duration: 0.3,
       ease: "back.out(1.7)",
     });
 
@@ -139,8 +121,8 @@ export const NodeFlowApp = () => {
         node1ListRef.current.children,
         {
           opacity: 1,
-          duration: 0.3,
-          stagger: 0.15,
+          duration: 0.2,
+          stagger: 0.08,
           ease: "power2.out",
         },
         "+=0.2"
@@ -151,13 +133,13 @@ export const NodeFlowApp = () => {
     tl.to(
       {},
       {
-        duration: 0.5,
+        duration: 0.3,
         onStart: () => {
           if (connection1Ref.current) {
             gsap.fromTo(
               connection1Ref.current,
               { opacity: 0 },
-              { opacity: 1, duration: 0.5 }
+              { opacity: 1, duration: 0.3 }
             );
           }
         },
@@ -171,7 +153,7 @@ export const NodeFlowApp = () => {
       {
         opacity: 1,
         scale: 1,
-        duration: 0.5,
+        duration: 0.3,
         ease: "back.out(1.7)",
       },
       "+=0.2"
@@ -183,8 +165,8 @@ export const NodeFlowApp = () => {
         node2ListRef.current.children,
         {
           opacity: 1,
-          duration: 0.3,
-          stagger: 0.15,
+          duration: 0.2,
+          stagger: 0.08,
           ease: "power2.out",
         },
         "+=0.2"
@@ -195,13 +177,13 @@ export const NodeFlowApp = () => {
     tl.to(
       {},
       {
-        duration: 0.5,
+        duration: 0.3,
         onStart: () => {
           if (connection2Ref.current) {
             gsap.fromTo(
               connection2Ref.current,
               { opacity: 0 },
-              { opacity: 1, duration: 0.5 }
+              { opacity: 1, duration: 0.3 }
             );
           }
         },
@@ -215,7 +197,7 @@ export const NodeFlowApp = () => {
       {
         opacity: 1,
         scale: 1,
-        duration: 0.5,
+        duration: 0.3,
         ease: "back.out(1.7)",
       },
       "+=0.2"
@@ -227,8 +209,8 @@ export const NodeFlowApp = () => {
         node3ListRef.current.children,
         {
           opacity: 1,
-          duration: 0.3,
-          stagger: 0.15,
+          duration: 0.2,
+          stagger: 0.08,
           ease: "power2.out",
         },
         "+=0.2"
@@ -261,7 +243,7 @@ export const NodeFlowApp = () => {
         <>
           <div className="flex flex-col items-center justify-center h-full w-full relative">
             {/* Control Panel */}
-            <div className="prompt-input flex absolute bottom-30 rounded-xl items-center justify-between p-2 border border-gray-300 min-w-md bg-background shadow-lg">
+            <div className="prompt-input flex absolute bottom-3 min-[600px]:bottom-30 rounded-xl items-center justify-between p-2 border border-gray-300 w-[400px] max-w-[95%] bg-background shadow-lg">
               <div className="flex items-center gap-3">
                 <div className="bg-gray-100 p-2 rounded-full border border-gray-200">
                   <Plus className="text-text" />
@@ -276,7 +258,7 @@ export const NodeFlowApp = () => {
                     scaleDistance={1.1}
                     rotateYDistance={20}
                   >
-                    Creating the perfect dish...
+                    Creating your portfolio...
                   </TextShimmerWave>
                 ) : (
                   <TypewriterEffectSmooth
@@ -292,9 +274,6 @@ export const NodeFlowApp = () => {
                     ]}
                     speed={1}
                     cursorClassName="hidden w-[2px] rounded-full bg-gray-200"
-                    onAnimationComplete={() =>
-                      setTimeout(() => setIsPlaying(true), 1000)
-                    }
                   />
                 )}
               </div>
@@ -464,7 +443,8 @@ export const NodeFlowApp = () => {
           </div>
         </>
       }
-      children={<div className="h-screen w-screen" />}
-    />
+    >
+      <div className="h-full w-full" />
+    </DotGridBackground>
   );
 };

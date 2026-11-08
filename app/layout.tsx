@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} antialiased selection:bg-primary selection:text-black transition-colors duration-300`}
+        className={`${outfit.variable} ${spaceGrotesk.variable} antialiased selection:bg-primary selection:text-black transition-colors duration-300`}
       >
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           <CursorProvider>
