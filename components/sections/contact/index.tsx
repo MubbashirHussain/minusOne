@@ -17,23 +17,23 @@ export default function ContactSection() {
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [-100, 0]);
-
   return (
     <section
+      id="contact"
       ref={containerRef}
-      className="relative z-30 bg-secondary text-text-inverse overflow-hidden min-h-[100vh] flex flex-col justify-center py-10 lg:py-16 "
+      className="relative z-30 bg-secondary dark:bg-secondary-100 text-white overflow-hidden min-h-[calc(100dvh+5px)] flex flex-col justify-center py-10 lg:py-16 "
     >
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row justify-between items-start md:items-end gap-12 lg:gap-20">
           <div className="flex flex-col gap-8 max-w-3xl">
             <motion.h2
               style={{ y }}
-              className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter hover:text-primary transition-colors duration-500 cursor-default"
+              className="text-[clamp(2.75rem,7.5vw,7rem)] font-bold tracking-tighter text-border dark:text-secondary-300 hover:text-primary transition-colors duration-500 cursor-default"
             >
               {/* <InteractiveContactCard> */}
-                Let's create <br />
-                <span className="text-primary italic">something</span> <br />
-                together.
+              Let's create <br />
+              <span className="text-primary italic">something</span> <br />
+              together.
               {/* </InteractiveContactCard> */}
             </motion.h2>
 
@@ -48,13 +48,13 @@ export default function ContactSection() {
               <Link href="mailto:hello@mubbashir.dev">
                 <InteractiveHoverButton
                   text="Drop me an email"
-                  className="w-fit px-10 py-4 text-lg border-secondary-500 bg-background text-secondary hover:bg-primary hover:text-secondary hover:border-primary cursor-navigation"
+                  className="w-fit px-10 py-4 text-lg border-secondary-800 dark:text-secondary-800  dark:bg-background-tertiary dark:border-secondary-500 dark:hover:bg-secondary dark:hover:text-primary dark:hover:border-primary bg-background text-secondary hover:bg-primary hover:text-secondary hover:border-primary cursor-navigation"
                 />
               </Link>
             </div>
           </div>
 
-          <div className="flex flex-col gap-8 items-end">
+          <div className="flex flex-col gap-8 items-start lg:items-end">
             <div className="flex gap-6">
               {[
                 { icon: Github, href: "https://github.com", label: "Github" },
@@ -81,20 +81,20 @@ export default function ContactSection() {
               ))}
             </div>
 
-            <div className="text-right text-secondary-400 font-space-grotesk">
+            <div className="text-left lg:text-right text-secondary-400 font-space-grotesk">
               <p className="text-sm">
-                Based in <span className="text-text-inverse">Pakistan</span>
+                Based in <span className="text-white">Pakistan</span>
               </p>
-              <p className="text-sm mt-1 flex items-center justify-end gap-2">
+              <p className="text-sm mt-1 flex items-center lg:justify-end gap-2">
                 Local time: <Clock />
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 pt-12 border-t border-secondary-800 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-secondary-500 font-space-grotesk">
+        <div className="mt-12 pt-12 border-t border-secondary-800 flex flex-col lg:flex-row justify-between items-center gap-6 text-sm text-secondary-500 font-space-grotesk">
           <p>© {new Date().getFullYear()} Mubbashir. All rights reserved.</p>
-          <div className="flex gap-8">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             <Link
               href="#"
               className="hover:text-primary transition-colors cursor-button"
@@ -124,7 +124,7 @@ function Clock() {
           hour: "2-digit",
           minute: "2-digit",
           timeZone: "Asia/Karachi", // Assuming Pakistan based on text
-        })
+        }),
       );
     };
 

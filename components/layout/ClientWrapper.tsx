@@ -1,25 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Preloader from "@/components/animations/Preloader";
-
-export default function ClientWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // return children;
-  return (
-    <>
-      {!isLoaded ? (
-        <div className="h-screen w-screen relative">
-          <Preloader onFinish={() => setIsLoaded(true)} isShown={!isLoaded} />
-        </div>
-      ) : (
-        children
-      )}
-    </>
-  );
+// Page content stays server-rendered. The optional node intro can be added as
+// an overlay here without replacing children or blocking article indexing.
+export default function ClientWrapper({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

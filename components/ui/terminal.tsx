@@ -49,7 +49,7 @@ export default function Terminal() {
     palette,
     currentThemeName,
     isVisible,
-    setIsVisible
+    setIsVisible,
   );
 
   // Run boot sequence when visible
@@ -66,12 +66,12 @@ export default function Terminal() {
     setIsTerminalOpen,
     isResizing,
     setIsResizing,
-    setTerminalHeight
+    setTerminalHeight,
   );
 
   // Dynamic terminal height calculation
   const terminalHeightStyle = isTerminalOpen
-    ? `${terminalHeight}vh`
+    ? `min(${terminalHeight}dvh, 85dvh)`
     : `${MIN_HEIGHT}px`;
 
   const closeTerminal = useCallback((e: React.MouseEvent) => {
@@ -85,6 +85,9 @@ export default function Terminal() {
 
   return (
     <>
+      {!isVisible && <button type="button" onClick={() => { setIsVisible(true); setIsTerminalOpen(true); }}
+        className="fixed bottom-4 right-4 z-20 rounded-full border border-text/20 bg-background px-4 py-3 text-sm font-mono text-text shadow-lg"
+        aria-label="Open terminal">&gt;_ Terminal</button>}
       <div
         ref={containerRef}
         className={`fixed bottom-0 left-0 w-full shadow-2xl z-20 transition-transform duration-500 ease-in-out flex flex-col ${

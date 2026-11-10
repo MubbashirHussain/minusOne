@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import { InvertedCorner } from "@/components/ui/inverted-corner";
-import { getColorStyle, tailwindToHex } from "@/lib/color-utils";
+import { getColorStyle } from "@/lib/color-utils";
+import { useTailwindHex } from "@/hooks/use-tailwind-hex";
 
 /** Configuration for a single corner */
 interface CornerConfig {
@@ -106,8 +109,8 @@ interface SideTabProps {
 export const SideTab = React.forwardRef<HTMLDivElement, SideTabProps>(
   (
     {
-      width = "100px",
-      height = "90px",
+      width,
+      height,
       top,
       left,
       right,
@@ -123,11 +126,11 @@ export const SideTab = React.forwardRef<HTMLDivElement, SideTabProps>(
       side = "left",
       children,
     },
-    ref
+    ref,
   ) => {
     const isVertical = side === "left" || side === "right";
     const bgStyle = color ? getColorStyle(color, "bg") : {};
-    const bgColor = tailwindToHex(bgClassName || "");
+    const bgColor = useTailwindHex(bgClassName || "");
 
     // Determine the main tab's border radius based on side
     let borderRadiusStyle: React.CSSProperties = {};
@@ -167,8 +170,8 @@ export const SideTab = React.forwardRef<HTMLDivElement, SideTabProps>(
 
     // Determine styles for the main tab
     let mainTabStyles: React.CSSProperties = {
-      width: width,
-      height: height,
+      ...(width !== undefined && { width }),
+      ...(height !== undefined && { height }),
       top,
       left,
       right,
@@ -271,15 +274,15 @@ export const SideTab = React.forwardRef<HTMLDivElement, SideTabProps>(
               fillColor={corner.fillColor}
               backgroundColor={
                 corner.backgroundColor ||
-                tailwindToHex(bgStyle.className || bgColor)
+                (bgStyle.className ? bgStyle.className : bgColor)
               }
             />
-          ) : null
+          ) : null,
         )}
         {children}
       </div>
     );
-  }
+  },
 );
 
 SideTab.displayName = "SideTab";

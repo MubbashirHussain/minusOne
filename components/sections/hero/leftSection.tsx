@@ -4,6 +4,7 @@ import { SideTab } from "@/components/ui/side-tab";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { getColorStyle } from "@/lib/color-utils";
 import gsap from "gsap";
+import { useTheme } from "next-themes";
 
 export interface HeroLeftSectionProps {
   /** Name to display in the heading */
@@ -55,6 +56,7 @@ export const HeroLeftSection = ({
   const blobRef = useRef<HTMLDivElement>(null);
   const blobRef1 = useRef<HTMLDivElement>(null);
   const TextSectionRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -72,7 +74,7 @@ export const HeroLeftSection = ({
           duration: 1,
           ease: "power3.out",
         },
-        "-=1" // Overlap slightly so it doesn't wait full 1.5s
+        "-=1", // Overlap slightly so it doesn't wait full 1.5s
       );
     });
 
@@ -80,16 +82,18 @@ export const HeroLeftSection = ({
   }, []);
 
   return (
-    <div className={`flex flex-col justify-start md:pr-12 ${className}`}>
-      {/* Decorative Side Tabs */}
-      <div className="">
+    <div className={`flex flex-col justify-start lg:pr-8 ${className}`}>
+      {/* Decorative Side Tabs - Hidden on Tablet/Mobile */}
+      <div className="hidden lg:block">
         <SideTab
           ref={blobRef}
           top="13.5%"
           left="0%"
           right="0%"
           bottom="0%"
-          color="primary"
+          // color="primary"
+          bgClassName={`${theme === "dark" ? "bg-background" : "bg-primary"}`}
+          className="bg-primary dark:bg-background"
           eachCorner={{
             br: { enabled: false },
             tr: {
@@ -114,8 +118,10 @@ export const HeroLeftSection = ({
           left="15%"
           right="0%"
           bottom="0%"
-          color="primary"
+          // color="primary"
           cornerSize={30}
+          bgClassName={`${theme === "dark" ? "bg-background" : "bg-primary"}`}
+          className="bg-primary dark:bg-background"
           eachCorner={{
             bl: {
               enabled: true,
@@ -155,9 +161,9 @@ export const HeroLeftSection = ({
         )}
 
         {/* Heading */}
-        <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.1] mb-6 tracking-tight text-text">
+        <h1 className="text-[clamp(2.5rem,5vw,3.75rem)] font-extrabold leading-[1.1] mb-6 tracking-tight text-text">
           Hey, I am{" "}
-          <span className="relative">
+          <span className="relative inline-block">
             {name}
             {/* Underline decoration */}
             <svg
@@ -180,7 +186,7 @@ export const HeroLeftSection = ({
         </h1>
 
         {/* Description */}
-        <p className="text-text-secondary text-lg leading-relaxed mb-10 max-w-lg font-space-grotesk">
+        <p className="text-text-secondary text-base md:text-lg leading-relaxed mb-10 max-w-lg font-space-grotesk">
           {description}
         </p>
 
@@ -188,7 +194,7 @@ export const HeroLeftSection = ({
         <InteractiveHoverButton
           onClick={onCtaClick}
           text={ctaText}
-          className="w-fit px-8 py-4 mb-16 md:mb-24 text-lg cursor-navigation"
+          className="w-fit px-8 py-4 mb-0 text-lg cursor-navigation"
         />
       </div>
     </div>

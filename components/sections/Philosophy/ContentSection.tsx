@@ -15,7 +15,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data, isActive }) => {
   return (
     <section
       id={data.id}
-      className="scroll-mt-8 mb-24 relative group last:mb-0"
+      className="scroll-mt-28 mb-24 relative group last:mb-0"
     >
       <div className="flex items-center gap-4 md:gap-0 mb-6 relative z-10">
         {/* Timeline Icon Node 
@@ -37,7 +37,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data, isActive }) => {
             md:absolute md:-left-[4.5rem] md:top-1/2 md:-translate-y-1/2
             ${
               isActive
-                ? "bg-primary-100 border-primary-300 text-text-main scale-110"
+                ? "bg-primary-100 border-primary-300 text-text scale-110"
                 : "bg-secondary border-secondary-100 text-text-muted md:bg-secondary-50"
             } cursor-button
         `}
@@ -54,7 +54,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data, isActive }) => {
         <h2
           className={`
           text-2xl md:text-3xl font-bold leading-tight tracking-tight transition-colors duration-500
-          ${isActive ? "text-text-main" : "text-text-main/60"}
+          ${isActive ? "text-text" : "text-text/60"}
         `}
         >
           {data.title}
@@ -67,7 +67,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({ data, isActive }) => {
         ${
           isActive
             ? "text-text-muted opacity-100"
-            : "text-text-muted/60 opacity-80"
+            : "text-text-secondary opacity-100"
         }
       `}
       >

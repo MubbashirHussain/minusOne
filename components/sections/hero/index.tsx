@@ -16,6 +16,9 @@ import {
   Linkedin,
 } from "lucide-react";
 import { tailwindToHex } from "@/lib/color-utils";
+import { useTheme } from "next-themes";
+import { useTailwindHex } from "@/hooks/use-tailwind-hex";
+
 import { HeroLeftSection } from "./leftSection";
 import gsap from "gsap";
 
@@ -23,6 +26,7 @@ export default function HeroSection() {
   const parentRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const toPxContainer = useElementUnits(containerRef);
+  const { theme } = useTheme();
 
   // Animation Refs
   const headerRef = useRef<HTMLDivElement>(null);
@@ -44,7 +48,7 @@ export default function HeroSection() {
   const onClickChargeHandle = () => {
     if (!isCharging.isCharging) {
       const audio = new Audio("/chargeSound.mp3");
-      audio.play();
+      void audio.play().catch(() => {});
     }
     setIsCharging((prev) => ({
       isCharging: !prev.isCharging,
@@ -70,7 +74,7 @@ export default function HeroSection() {
             x: -200,
             duration: 1,
           },
-          "-=0.8"
+          "-=0.8",
         )
         .from(
           scrollTabRef.current,
@@ -79,7 +83,7 @@ export default function HeroSection() {
             opacity: 0,
             duration: 0.8,
           },
-          "-=.8"
+          "-=.8",
         )
 
         // Right side animations
@@ -91,7 +95,7 @@ export default function HeroSection() {
             duration: 1,
             ease: "back.out(1)",
           },
-          "-=1"
+          "-=1",
         )
         .from(
           shapeRef.current,
@@ -100,7 +104,7 @@ export default function HeroSection() {
             duration: 0.8,
             // transformOrigin: "center center",
           },
-          "-=0.8"
+          "-=0.8",
         )
         .from(
           profileRef.current,
@@ -109,7 +113,7 @@ export default function HeroSection() {
             opacity: 0,
             duration: 1,
           },
-          "-=0.6"
+          "-=0.6",
         );
     }, containerRef); // Scope to containerRef
 
@@ -125,45 +129,57 @@ export default function HeroSection() {
     { label: "Contact", href: "#contact", rel: "noopener noreferrer" },
   ];
 
+  const secondaryColor = useTailwindHex(
+    theme === "dark" ? "bg-secondary-100" : "bg-secondary",
+  );
+  const accentColor = useTailwindHex(
+    theme === "dark" ? "bg-accent-200" : "bg-accent-600",
+  );
+
   // Floating icons configuration
   const floatingIcons: FloatingIcon[] = [
     {
       icon: Github,
-      backgroundColor: tailwindToHex("bg-secondary"),
+      backgroundColor: secondaryColor,
       position: "-right-8 top-20",
       size: 24,
     },
     {
       icon: Linkedin,
-      backgroundColor: tailwindToHex("bg-accent-600"),
+      backgroundColor: accentColor,
       position: "-left-6 bottom-32",
       size: 24,
     },
   ];
 
   return (
-    <div className="grid grid-cols-12 gap-5 h-full" ref={containerRef}>
+    <div
+      className="hero-grid grid grid-cols-12 gap-5 h-full bg-background dark:bg-[#242424] px-4 md:px-8"
+      ref={containerRef}
+    >
       {/* Left Column - Hero Content */}
       <div
         ref={parentRef}
-        className="col-span-7 justify-start flex items-center"
+        className="hero-copy col-span-12 lg:col-span-7 min-w-0 justify-start flex items-center"
       >
         <div className="w-full">
           <HeroLeftSection
             name="Mubbashir"
             description="I'm a digital designer and developer crafting nurturing digital environments. Like a peaceful sanctuary in the city, I build interfaces that are both invigorating and accessible, suitable for all users."
             ctaText="Get in touch"
-            onCtaClick={() => console.log("CTA clicked")}
+            onCtaClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
             showOpenToWork={true}
           />
         </div>
       </div>
 
-      {/* Decorative Side Tab */}
+      {/* Decorative Side Tab | left corner before 3 images - Hidden on Tablet/Mobile */}
       <SideTab
+        key={`hero-tab-1-${theme}`}
         bottom="29%"
         left="0%"
-        bgClassName="bg-primary"
+        bgClassName={`${theme === "dark" ? "bg-background" : "bg-primary"}`}
+        className="hidden lg:block bg-primary dark:bg-background"
         eachCorner={{
           br: { enabled: false },
           tr: { enabled: false },
@@ -175,24 +191,27 @@ export default function HeroSection() {
         cornerSize={40}
       />
 
-      {/* Bottom Image Gallery */}
+      {/* Bottom Image Gallery - Hidden on Tablet/Mobile */}
       <ImageGallery
         ref={galleryRef}
         imageCount={3}
+        gap="gap-4"
         bgClassName="bg-primary"
         borderRadius="60px"
-        width="50%"
-        height="30%"
+        // width="50%"
+        // height="30%"
         position={{ bottom: "0", left: "0" }}
-        className="pointer-events-auto"
+        className="hero-gallery w-full pointer-events-auto lg:w-[50%] lg:h-[25%]"
+        padding="p-4 sm:p-6 lg:p-8"
+        imageBoxClassName="flex-1 min-w-0 aspect-square bg-background-secondary rounded-2xl h-fit"
       />
 
-      {/* Spacer */}
-      <div className="col-span-1"></div>
-      {/* Right Column - Profile Image */}
-      <div className="col-span-4 flex flex-col ">
+      {/* Spacer - Hidden on Tablet/Mobile */}
+      <div className="hidden lg:block col-span-1"></div>
+      {/* Right Column - Profile Image - Hidden on Tablet/Mobile */}
+      <div className="hero-portrait flex col-span-12 lg:col-span-4 min-w-0 flex-col ">
         <div
-          className="bg-secondary flex justify-between items-center p-2 px-3 w-[80%] my-3 rounded-full h-[60px]  self-baseline-last"
+          className="hero-battery bg-secondary flex justify-between items-center p-2 px-3 w-[80%] my-3 rounded-full h-[60px]  self-baseline-last"
           ref={batteryRef}
         >
           <BatteryIcon
@@ -205,7 +224,10 @@ export default function HeroSection() {
             fillColor="bg-white"
             textColor="text-white"
           />
-          <div
+          <button
+            type="button"
+            aria-label={isCharging.isCharging ? "Unplug battery" : "Charge battery"}
+            aria-pressed={isCharging.isCharging}
             onClick={onClickChargeHandle}
             className="group flex h-10 items-center border border-white rounded-full p-2 transition-all duration-300 hover:bg-white hover:text-secondary text-white  hover:pr-4"
           >
@@ -215,13 +237,13 @@ export default function HeroSection() {
             <span className="max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2 transition-all duration-300 ease-in-out whitespace-nowrap text-sm font-medium">
               {isCharging.isCharging ? "Unplug" : "Plug In"}
             </span>
-          </div>
+          </button>
         </div>
 
         {/* Background Shape */}
         <div
           ref={shapeRef}
-          className={`h-[80%] w-[43%] right-0 bg-primary absolute top-[10%]`}
+          className={`hidden lg:block h-[80%] w-[43%] right-0 bg-primary dark:bg-background absolute top-[10%]`}
           style={{
             borderRadius: toPxContainer("5%"),
           }}
@@ -229,13 +251,16 @@ export default function HeroSection() {
 
         {/* Decorative Side Tabs */}
         <div
+          key={`hero-tab-29-${theme}`}
           ref={rightSideTab1Ref}
-          className="absolute inset-0 pointer-events-none"
+          className="hidden lg:block absolute inset-0 pointer-events-none"
         >
           <SideTab
+            key={`hero-tab-2-${theme}`}
             top="10%"
             right="0%"
-            bgClassName="bg-primary"
+            bgClassName={`${theme === "dark" ? "bg-background" : "bg-primary"}`}
+            className="bg-primary dark:bg-background"
             eachCorner={{
               br: { enabled: true },
               tr: { enabled: false },
@@ -248,12 +273,14 @@ export default function HeroSection() {
         </div>
         <div
           ref={rightSideTab2Ref}
-          className="absolute inset-0 pointer-events-none"
+          className="hidden lg:block absolute inset-0 pointer-events-none"
         >
           <SideTab
+            key={`hero-tab-3-${theme}`}
             bottom="10%"
             right="0%"
-            bgClassName="bg-primary"
+            bgClassName={`${theme === "dark" ? "bg-background" : "bg-primary"}`}
+            className="bg-primary dark:bg-background"
             eachCorner={{
               br: { enabled: false },
               tr: { enabled: true },
@@ -270,7 +297,7 @@ export default function HeroSection() {
           <ProfileImage
             imageSrc="/images/hero-person.png"
             imageAlt="Mubbashir Portrait"
-            frameBgClassName="bg-primary"
+            frameBgClassName="bg-primary dark:bg-[#242424] dark:hover:bg-primary/90 "
             grayscale={true}
             floatingIcons={floatingIcons}
           />
